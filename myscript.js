@@ -1,4 +1,5 @@
 var localDB = [];
+var poller;
 
 function ready() {
   getCSV();
@@ -8,6 +9,7 @@ function getCSV() {
   axios.get("https://docs.google.com/spreadsheets/d/1N9iSbV7yMQWR886z6qOK5g9lLyAUHXHmu_6MsZne_Bs/pub?gid=507572218&single=true&output=csv")
     .then(function(response) {
       formatLocalDB(response.data);
+      resetPoller();
     })
 }
 
@@ -19,6 +21,7 @@ function formatLocalDB(data) {
   ) {
     tempDB.shift();
   }
+  localDB = [];
   tempDB.forEach(function(e) {
     var element = e.split(",");
     localDB.push({task: element[1], currentStatus: element[2]});
@@ -28,6 +31,10 @@ function formatLocalDB(data) {
 
 function refreshView() {
   var todolist = document.getElementById("todolist");
+
+  while (todolist.firstChild) {
+    todolist.removeChild(todolist.firstChild);
+  }
   localDB.forEach(function(e) {
     var div = document.createElement("div");
     var currentStatus = e.currentStatus.trim();
@@ -39,4 +46,11 @@ function refreshView() {
 
     todolist.appendChild(div);
   })
+}
+
+function resetPoller() {
+   clearInterval(poller);
+   setInterval(function() {
+     getCSV();
+   }, 305000);
 }
