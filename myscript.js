@@ -50,6 +50,7 @@ function refreshView() {
     div.setAttribute("class", currentClass);
     div.innerHTML = localDB[key].task;
     div.setAttribute("id", key);
+    div.setAttribute("onclick", "handleToggle("+key+");");
 
     todolist.appendChild(div);
   });
@@ -70,6 +71,25 @@ function handleSubmit() {
   }, 200);
 
   return true;
+}
+
+function handleToggle(taskid) {
+  var task = document.getElementById(taskid);
+  var entry_task = task.textContent;
+  var entry_status = task.getAttribute("status");
+  var new_entry_status = (entry_status === "pending") ? "done" : "pending";
+
+  document.getElementById("newtodo").value = entry_task;
+  document.getElementById("taskstatus").value = new_entry_status;
+  document.getElementById("taskid").value = taskid;
+  document.getElementById("gform").submit();
+
+  localDB[parseInt(taskid)] = {
+    task: entry_task,
+    currentStatus: new_entry_status
+  };
+  refreshView()
+  resetPoller();
 }
 
 function setRandomId() {
