@@ -1,8 +1,9 @@
-var localDB = [];
+var localDB = {};
 var poller;
 
 function ready() {
   getCSV();
+  setRandomId();
 }
 
 function getCSV() {
@@ -21,10 +22,14 @@ function formatLocalDB(data) {
   ) {
     tempDB.shift();
   }
-  localDB = [];
+  localDB = {};
   tempDB.forEach(function(e) {
     var element = e.split(",");
-    localDB.push({task: element[1], currentStatus: element[2]});
+    var id = parseInt(element[3]);
+    localDB[id] = {
+      task: element[1],
+      currentStatus: element[2]
+    }
   });
   refreshView();
 }
@@ -32,20 +37,28 @@ function formatLocalDB(data) {
 function refreshView() {
   var todolist = document.getElementById("todolist");
 
+  setRandomId();
   while (todolist.firstChild) {
     todolist.removeChild(todolist.firstChild);
   }
-  localDB.forEach(function(e) {
+  Object.keys(localDB).forEach(function(key) {
     var div = document.createElement("div");
-    var currentStatus = e.currentStatus.trim();
+    var currentStatus = localDB[key].currentStatus.trim();
     var currentClass = (currentStatus == "done") ? "crossed" : "";
 
     div.setAttribute("status", currentStatus);
     div.setAttribute("class", currentClass);
-    div.innerHTML = e.task;
+    div.innerHTML = localDB[key].task;
+    div.setAttribute("id", key);
 
     todolist.appendChild(div);
-  })
+  });
+}
+
+function setRandomId() {
+  document.getElementById("taskid").value = Math.round(Math.random() * 1000000);
+  document.getElementById("newtodo").value = "";
+  document.getElementById("taskstatus").value = "pending";
 }
 
 function resetPoller() {
