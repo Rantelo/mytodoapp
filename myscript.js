@@ -55,6 +55,23 @@ function refreshView() {
   });
 }
 
+function handleSubmit() {
+  var newtodo = document.getElementById("newtodo").value;
+  var id = document.getElementById("taskid").value;
+  var status = document.getElementById("taskstatus").value;
+
+  localDB[parseInt(id)] = {
+    task: newtodo,
+    currentStatus: status
+  }
+  setTimeout(function() {
+    refreshView()
+    resetPoller();
+  }, 200);
+
+  return true;
+}
+
 function setRandomId() {
   document.getElementById("taskid").value = Math.round(Math.random() * 1000000);
   document.getElementById("newtodo").value = "";
