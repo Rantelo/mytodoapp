@@ -23,5 +23,20 @@ function formatLocalDB(data) {
     var element = e.split(",");
     localDB.push({task: element[1], currentStatus: element[2]});
   });
-  console.log(localDB);
+  refreshView();
+}
+
+function refreshView() {
+  var todolist = document.getElementById("todolist");
+  localDB.forEach(function(e) {
+    var div = document.createElement("div");
+    var currentStatus = e.currentStatus.trim();
+    var currentClass = (currentStatus == "done") ? "crossed" : "";
+
+    div.setAttribute("status", currentStatus);
+    div.setAttribute("class", currentClass);
+    div.innerHTML = e.task;
+
+    todolist.appendChild(div);
+  })
 }
